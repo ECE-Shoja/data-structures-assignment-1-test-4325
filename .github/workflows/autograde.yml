@@ -1,0 +1,32 @@
+name: Autograde
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Test C++ submissions
+        run: |
+          if ls starter/*.cpp 1> /dev/null 2>&1; then
+            g++ starter/*.cpp -o program
+            for i in {1..10}
+            do
+              ./program < tests/input$i.txt > result$i.txt
+              diff -w result$i.txt tests/output$i.txt
+            done
+          fi
+      
+      - name: Test Java submissions
+        run: |
+          if ls starter/*.java 1> /dev/null 2>&1; then
+            javac starter/*.java
+            for i in {1..10}
+            do
+              java -cp starter DSU < tests/input$i.txt > result$i.txt
+              diff -w result$i.txt tests/output$i.txt
+            done
+          fi

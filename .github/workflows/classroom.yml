@@ -1,0 +1,71 @@
+name: Autograding Tests
+
+on:
+  - push
+  - workflow_dispatch
+  - repository_dispatch
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Test C++ submissions
+      run: |
+        if ls starter/*.cpp 1> /dev/null 2>&1; then
+          echo "Compiling C++..."
+          g++ starter/*.cpp -o program
+          echo "Compile done"
+          for i in {1..10}
+          do
+            echo "Running test $i..."
+            ./program < tests/input$i.txt > result$i.txt
+            if diff -w result$i.txt tests/output$i.txt > /dev/null
+            then
+              echo "Test $i passed"
+            else
+              echo "Test $i FAILED"
+              echo "Expected:"
+              cat tests/output$i.txt
+              echo "Got:"
+              cat result$i.txt
+              exit 1
+            fi
+          done
+        fi
+
+    - name: Test Java submissions
+      run: |
+        if ls starter/*.java 1> /dev/null 2>&1; then
+          echo " Compiling Java..."
+          javac starter/*.java
+          echo "Compile done"
+          for i in {1..10}
+          do
+            echo "Running test $i..."
+            java -cp starter DSU < tests/input$i.txt > result$i.txt
+            if diff -w result$i.txt tests/output$i.txt > /dev/null
+            then
+              echo "Test $i passed"
+            else
+              echo "Test $i FAILED"
+              echo "Expected:"
+              cat tests/output$i.txt
+              echo "Got:"
+              cat result$i.txt
+              exit 1
+            fi
+          done
+        fi
+
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1

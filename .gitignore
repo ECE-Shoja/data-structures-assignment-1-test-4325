@@ -1,0 +1,17 @@
+# C++ compiled files
+*.exe
+*.out
+*.o
+*.obj
+helper
+
+# Java compiled files
+*.class
+
+# Output files from tests
+result*.txt
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
